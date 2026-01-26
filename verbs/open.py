@@ -49,9 +49,13 @@ def run(fips_dir, proj_dir, args) :
         if proj :
             subprocess.call('xed "{}"'.format(proj[0]), shell=True)
             return
-        # try to open as VS project
+        # try to open as VS project (.slnx since VS2026, otherwise .sln)
         proj = glob.glob(build_dir + '/*.sln')
         if proj :
+            subprocess.call('cmd /c start {}'.format(proj[0]), shell=True)
+            return
+        proj = glob.glob(build_dir + '/*.slnx')
+        if proj:
             subprocess.call('cmd /c start {}'.format(proj[0]), shell=True)
             return
         # try to open as eclipse project
