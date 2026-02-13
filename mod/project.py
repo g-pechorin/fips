@@ -7,6 +7,9 @@ import subprocess
 from mod import log, util, config, dep, template, settings, android, emsdk, wasisdk
 from mod.tools import git, cmake, xcrun, ccmake, cmake_gui, vscode, clion, httpserver, wasmtime
 
+
+gitignore_entries = ['.fips-*', 'fips-files/build/', 'fips-files/deploy/', '*.pyc', '.vscode/', '.idea/', 'CMakeUserPresets.json']
+
 #-------------------------------------------------------------------------------
 def init(fips_dir, proj_name) :
     """initialize an existing project directory as a fips directory by
@@ -24,7 +27,6 @@ def init(fips_dir, proj_name) :
         for f in ['CMakeLists.txt', 'fips', 'fips.cmd', 'fips.yml'] :
             template.copy_template_file(fips_dir, proj_dir, f, templ_values)
         os.chmod(proj_dir + '/fips', 0o744)
-        gitignore_entries = ['.fips-*', 'fips-files/build/', 'fips-files/deploy/', '*.pyc', '.vscode/', '.idea/', 'CMakeUserPresets.json']
         template.write_git_ignore(proj_dir, gitignore_entries)
     else :
         log.error("project dir '{}' does not exist".format(proj_dir))
@@ -111,6 +113,7 @@ def gen(fips_dir, proj_dir, cfg_name) :
     dep.fetch_imports(fips_dir, proj_dir)
     util.ensure_valid_project_dir(proj_dir)
     dep.gather_and_write_imports(fips_dir, proj_dir, cfg_name)
+    template.write_git_ignore(proj_dir, gitignore_entries)
 
     # load the config(s)
     configs = config.load(fips_dir, proj_dir, cfg_name)
